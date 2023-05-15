@@ -9,6 +9,6 @@ interface Token {
 	index: number;
 	text?: string:
 	emoji?: string;
-	rgi?: string;
+	RGI?: string;
 }
 export function tokenize(input: string): Token[];

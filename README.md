@@ -41,7 +41,7 @@ Split a string into tokens:
 let tokens = tokenize('abc💩\uFE0Eabc💩\u200D💩abc');
 // [
 //   { index: 0, text: 'abc' },
-//   { index: 3, emoji: '💩︎', rgi: '💩' },
+//   { index: 3, emoji: '💩︎', RGI: '💩' },
 //   { index: 6, text: 'abc' },
 //   { index: 9, emoji: '💩‍💩' },
 //   { index: 14, text: 'abc' }
@@ -49,8 +49,8 @@ let tokens = tokenize('abc💩\uFE0Eabc💩\u200D💩abc');
 
 // Usage examples:
 //  Purge ALL Emoji: tokens.flatMap(x => x.text || '').join('');
-//  Keep Text & RGI: tokens.flatMap(x => x.text || x.rgi || '').join('');
-//   Upgrade to RGI: tokens.flatMap(x => x.text || x.rgi || x.emoji).join('');
+//  Keep Text & RGI: tokens.flatMap(x => x.text || x.RGI || '').join('');
+//   Upgrade to RGI: tokens.flatMap(x => x.text || x.RGI || x.emoji).join('');
 ```
 
 Convert an Emoji to fully-qualified RGI, if possible:
