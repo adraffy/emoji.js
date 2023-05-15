@@ -1,0 +1,47 @@
+{
+	"name": "@adraffy/emoji",
+	"version": "0.0.1",
+	"description": "0-dependency UTS-51 Emoji parser",
+	"keywords": [
+		"UTS-51",
+		"Unicode",
+		"Emoji",
+		"RGI"
+	],
+	"type": "module",
+	"exports": {
+	  ".": {
+		"require": "./dist/index.cjs",
+		"import": "./dist/index.js",
+		"types": "./dist/index.d.ts"
+	  }
+	},
+	"main": "./dist/index.js",
+	"files": [
+	  "./dist"
+	],
+	"repository": {
+	  "type": "git",
+	  "url": "git+https://github.com/adraffy/emoji.js.git"
+	},
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/adraffy/emoji.js/issues"
+	},
+	"homepage": "https://github.com/adraffy/emoji.js#readme",
+	"author": {
+		"name": "raffy.eth",
+		"email": "raffy@me.com",
+		"url": "http://raffy.antistupid.com"
+	},
+	"scripts": {
+		"make": "node src/make.js",
+		"test": "node test/coder.js && node test/test.js",
+		"build": "rollup -c"
+	},
+	"devDependencies": {
+		"@rollup/plugin-node-resolve": "^15.0.2",
+		"@rollup/plugin-terser": "^0.4.1",
+		"rollup": "^3.21.7"
+	}
+}
