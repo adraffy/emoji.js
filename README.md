@@ -48,9 +48,9 @@ let tokens = tokenize('abc💩\uFE0Eabc💩\u200D💩abc');
 // ]
 
 // Usage examples:
-//  Purge ALL Emoji: tokens.flatMap(x => x.text || '').join('');
-//  Keep Text & RGI: tokens.flatMap(x => x.text || x.RGI || '').join('');
-//   Upgrade to RGI: tokens.flatMap(x => x.text || x.RGI || x.emoji).join('');
+//  Purge ALL Emoji: tokens.map(x => x.text || '').join('');
+//  Keep Text & RGI: tokens.map(x => x.text || x.RGI || '').join('');
+//   Upgrade to RGI: tokens.map(x => x.text || x.RGI || x.emoji).join('');
 ```
 
 Convert an Emoji to fully-qualified RGI, if possible:
