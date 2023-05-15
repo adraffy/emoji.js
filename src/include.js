@@ -1,5 +1,5 @@
 export const UNICODE_VERSION = "15.0.0";
-export const BUILT = "2023-05-15T02:07:52.672Z";
+export const BUILT = "2023-05-15T06:01:58.224Z";
 export const TAG_REGEX = "[󠀠-󠁾]+󠁿";
 export const RI_REGEX = "[🇦-🇿]";
 export const EMOD_REGEX = "[🏻-🏿]";

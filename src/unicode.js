@@ -7,12 +7,16 @@ export class Spec {
 		if (!lstatSync(dir, {throwIfNoEntry: false})?.isDirectory) {
 			dir = fileURLToPath(new URL(dir, import.meta.url));
 		}
+		this.dir = dir;
 		this.version = JSON.parse(readFileSync(join(dir, 'version.json')));
 		this.version.date = new Date(this.version.date);
 		this.data = read_data_file(join(dir, 'emoji-data.txt'));
 		this.seq = read_seq_file(join(dir, 'emoji-sequences.txt'));
 		this.zwj = read_seq_file(join(dir, 'emoji-zwj-sequences.txt'));
 		this.prop = read_prop_file(join(dir, 'PropList.txt'));
+	}
+	get tests() {
+		return read_test_file(join(this.dir, 'emoji-test.txt'));
 	}
 }
 
@@ -56,6 +60,32 @@ export function read_seq_file(file) {
 		}
 	});
 	return map;
+}
+
+export function read_test_file(file) {
+	// # subgroup: face-smiling
+	// 1F600 ; fully-qualified # 😀 E1.0 grinning face
+	let ret = [];
+	let subgroup;
+	parse_semicolon_file(file, ([hex, type], comment) => {
+		if (!type) {
+			let match = comment.match(/^subgroup:(.*)$/);
+			if (match) {
+				subgroup = match[1];
+			}
+			return;
+		}
+		let cps = hex.split(/\s+/).map(parse_hex_cp);
+		let match = comment.match(/E(\d+.\d+) (.*)$/);
+		if (!match) throw new Error(`bad comment`);
+		ret.push({
+			cps, subgroup, type,
+			form: String.fromCodePoint(...cps),
+			version: match[1],
+			name: match[2],
+		});
+	});
+	return ret;
 }
 
 export function read_prop_file(file) {

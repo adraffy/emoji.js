@@ -36,7 +36,7 @@
 	},
 	"scripts": {
 		"make": "node src/make.js",
-		"test": "node test/coder.js && node test/test.js",
+		"test": "node test/coder.js && node test/regex.js && node test/qualified.js",
 		"build": "rollup -c"
 	},
 	"devDependencies": {

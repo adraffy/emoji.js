@@ -18,3 +18,7 @@ export function compare_arrays(a, b) {
 	for (let i = 0; c == 0 && i < n; i++) c = a[i] - b[i];
 	return c;
 }
+
+export function remove_fe0f(s) {
+	return s.replaceAll('\uFE0F', '');
+}
