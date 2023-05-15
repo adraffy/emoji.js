@@ -6,11 +6,12 @@ Compact 0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji parse
 * Minified File Size: [`8KB`](./dist/index.min.js)
 
 ```Javascript
-import {POSSIBLE_REGEX, RGI_REGEX, RGI_EMOJI} from '@adraffy/emoji.js';
+import {POSSIBLE_REGEX, RGI_REGEX, RGI_EMOJI} from '@adraffy/emoji';
 // npm i @adraffy/emoji
 // browser: https://cdn.jsdelivr.net/npm/@adraffy/emoji@latest/dist/index.min.js
 
 // RegExp that matches UTS-51 "Possible" Emoji
+// see: https://www.unicode.org/reports/tr51/#EBNF_and_Regex
 let match = 'abc💩\u200D💩xyz'.match(POSSIBLE_REGEX);
 // [
 //   '💩‍💩',
@@ -29,6 +30,7 @@ let match = 'abc👁️‍🗨️xyz'.match(RGI_REGEX);
 // ]
 
 // string[] of all **fully-qualified** RGI Emoji
+// see: https://unicode.org/emoji/charts/full-emoji-list.html
 console.log(RGI_EMOJI); 
 // [ '⌚', '⌛', '⏩', ... ]
 ```
@@ -64,9 +66,10 @@ qualifize('x'); // undefined
 
 ## Build
 
-1. `node.js download 15` — download [Unicode files](./src/15.0.0/)
+* `git clone` this repo, then `npm install` 
+* `node.js download 15` — download [Unicode files](./src/15.0.0/)
 	* Edit version in [`spec.js`](./src/spec.js)
-1. `npm run make`
+* `npm run make`
 	* Creates [`include.js`](./src/include.js)
-1. `npm run test`
-1. `npm run build` — create `/dist/`
+* `npm run test`
+* `npm run build` — create `/dist/`

@@ -10,7 +10,7 @@ for (let m of RGI_DATA) {
 	m = m.map(seq_from_b64);
 	m[0].map((_, i) => add(fcp(...m.map(v => replace[v[i]]))));
 }
-RGI_TAG_SEQS.map(add);
+RGI_TAG_SEQS.map(add); // note: not sorted
 function add(emoji) {
 	let strip = remove_fe0f(emoji);
 	if (emoji !== strip) upgrade_map.set(strip, emoji);
@@ -36,10 +36,11 @@ function add(emoji) {
   )*
 */
 //const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|[${emoji_runs.map(([x, n]) => regex_range(x, x+n-1)).join('')}](?:${EMOD_REGEX}|\uFE0F\u20E3?|${TAG_REGEX})?)`;
-// change: RI_REGEX{2} => RI_REGEX{1,2}
-// allow arbitrary FE0F
-// change: \uFE0F\u20E3? => \u20E3
+
+// 20230514: RI_REGEX{2} => RI_REGEX{1,2}
+// 20230514: allow arbitrary FE0F, \uFE0F\u20E3? => \u20E3
 const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|[${emoji_runs.map(([x, n]) => regex_range(x, x+n-1)).join('')}]\uFE0F*(?:(?:${EMOD_REGEX}|\u20E3|${TAG_REGEX})\uFE0F*)?)`;
+
 export const POSSIBLE_REGEX = new RegExp(`${ZWJ_ELEMENT}(?:\u200D${ZWJ_ELEMENT})*`, 'gmu');
 
 // emoji are sorted so reversed will match longest sequence first
@@ -53,13 +54,8 @@ Object.freeze(RGI_EMOJI);
 //Object.freeze(RGI_REGEX);
 //Object.freeze(POSSIBLE_REGEX);
 
-// this is trivial
-/*
-export function strip_emoji(input) {
-	return input.replaceAll(POSSIBLE_REGEX, '');
-}
-*/
-
+// entire string must match
+// if RGI, return upgraded
 export function qualifize(emoji) {
 	let match = emoji.match(RGI_REGEX);
 	if (match && match[0] === emoji) return upgrade_map.get(remove_fe0f(emoji)) || emoji;
@@ -89,3 +85,10 @@ export function tokenize(input) {
 	}
 	return tokens;
 }
+
+// this is trivial
+/*
+export function strip_emoji(input) {
+	return input.replaceAll(POSSIBLE_REGEX, '');
+}
+*/

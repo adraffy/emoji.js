@@ -34,4 +34,3 @@ for (let i = 0; i < 10_000; i++) {
 	}
 }
 console.log('OK runs');
-

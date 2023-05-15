@@ -6,7 +6,6 @@ import {writeFileSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {regex_escape, regex_range, compare_arrays, explode_cps} from './utils.js';
 
-
 /*
 console.log(Object.keys(SPEC.data));
 console.log(Object.keys(SPEC.seq));
@@ -27,7 +26,7 @@ function is_linear_span(v) {
 	return !v.length || v.every((x, i) => x - x0 === i);
 }
 
-// 20230514: it's kinda shitty that "1F3FB..1F3FF" are considered RGI emoji
+// 20230514: it's kinda shitty that "1F3FB..1F3FF" are considered RGI emoji (currently EMOD)
 
 // collect RGI emoji
 let rgi = [];
@@ -93,4 +92,3 @@ function export_var(name, x) {
 	}
 	return `export const ${name} = ${value};`;
 }
-
