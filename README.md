@@ -1,6 +1,6 @@
 # emoji.js
 
-Compact 0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji parser exposed as Regex.
+Compact 0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji parser.
 
 * Unicode `15.0.0`
 * Minified File Size: [`8KB`](./dist/index.min.js)
@@ -67,6 +67,6 @@ qualifize('x'); // undefined
 1. `node.js download 15` — download [Unicode files](./src/15.0.0/)
 	* Edit version in [`spec.js`](./src/spec.js)
 1. `npm run make`
-	* Creates [`include.js`](../src/include.js)
+	* Creates [`include.js`](./src/include.js)
 1. `npm run test`
 1. `npm run build` — create `/dist/`
