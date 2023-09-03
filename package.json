@@ -1,6 +1,6 @@
 {
 	"name": "@adraffy/emoji",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "0-dependency UTS-51 Emoji parser",
 	"keywords": [
 		"UTS-51",
@@ -10,19 +10,19 @@
 	],
 	"type": "module",
 	"exports": {
-	  ".": {
-		"require": "./dist/index.cjs",
-		"import": "./dist/index.js",
-		"types": "./dist/index.d.ts"
-	  }
+		".": {
+			"require": "./dist/index.cjs",
+			"import": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		}
 	},
 	"main": "./dist/index.js",
 	"files": [
-	  "./dist"
+		"./dist"
 	],
 	"repository": {
-	  "type": "git",
-	  "url": "git+https://github.com/adraffy/emoji.js.git"
+		"type": "git",
+		"url": "git+https://github.com/adraffy/emoji.js.git"
 	},
 	"license": "MIT",
 	"bugs": {

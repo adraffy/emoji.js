@@ -6,10 +6,11 @@ console.log('abc👁️‍🗨️xyz'.match(RGI_REGEX));
 
 console.log(tokenize('abc💩\uFE0Eabc💩\u200D💩abc'));
 
-console.log(qualifize('☹️')); // 2639 FE0F 
-console.log(qualifize('☹')); // 2639 FE0F 
-console.log(qualifize('x')); // undefined
-
+console.log(qualifize('\u2639\uFE0F'));
+console.log(qualifize('\u2639\uFE0F\uFE0F'));
+console.log(qualifize('\u2639\uFE0E')); 
+console.log(qualifize('\u2639')); 
+console.log(qualifize('x')); 
 
 console.log(RGI_EMOJI);
 console.log(`RGI Emoji Count: ${RGI_EMOJI.length}`);

@@ -1,5 +1,12 @@
+import {EmojiNode} from './emoji-node.js';
+import {unique_sorted} from './utils.js';
+
+export const MAX_UINT = 0xFFFFFFF;
+
 export function bit_reader_from_b64(encoded) {
-	let v = Array.from(atob(encoded), c => c.charCodeAt(0));
+	return bit_reader_from_bytes(Array.from(atob(encoded), c => c.charCodeAt(0)));
+}
+export function bit_reader_from_bytes(v) {
 	let w = 0;
 	let r;
 	return () => {
@@ -21,47 +28,57 @@ export function to_signed(x) {
 	return (x & 1) ? (~x >> 1) : (x >> 1);
 }
 
-export function flatten_runs(runs) {
-	return runs.flatMap(([x, n]) => Array.from({length: n}, (_, i) => x+i));
-}
-
-export function runs_from_b64(encoded) {
-	let runs = [];
-	let next = bit_reader_from_b64(encoded);
-	let prev = -1;
-	while (true) {
-		let dx = read_pos_int(next);
-		if (!dx) break;
-		let n = read_pos_int(next);
-		runs.push([prev += dx, n]);
-		prev += n;
-	}
-	return runs;
-}
-
-export function seq_from_b64(encoded) {
-	let seq = [];
-	let next = bit_reader_from_b64(encoded);
-	let prev = -1;
-	while (true) {
-		let dx = read_pos_int(next);
-		if (!dx) break;
-		prev += to_signed(dx);
-		let n = read_pos_int(next);
-		while (n--) seq.push(prev);
-	}
-	return seq;
-}
-
-export function read_pos_int(next) {
+export function decode_uint(next) {
 	let w = 0;
 	while (next()) w++;
 	let x = 0;
 	while (w--) x = (x << 1) | next();
 	return x
 }
+export function decode_uint_sorted(next) {
+	let sorted = [];
+	let prev = 0;
+	while (true) {
+		let dx = decode_uint(next);
+		let n = decode_uint(next);
+		if (n == 0) break;
+		prev += dx;
+		for (let i = 0; i < n; i++) {
+			sorted.push(prev++);
+		}
+		prev++;
+	}
+	return sorted;
+} 
+export function decode_emojis(next, fn) {
+	let ret = [];
+	expand(decode([]), []);
+	return ret; 
+	function decode(Q) { 
+		let V = next();
+		let S = next();
+		let C = next();
+		let B = [];
+		while (true) {
+			let cps = decode_uint_sorted(next);
+			if (!cps.length) break;
+			B.push(decode(cps));
+		}
+		return {V, S, C, B, Q};
+	}
+	function expand({V, S, C, B}, cps, saved) {
+		if (C && saved === cps[cps.length-1]) return;
+		if (S) saved = cps[cps.length-1];
+		if (V) ret.push(cps.map(fn)); 
+		for (let br of B) {
+			for (let cp of br.Q) {
+				expand(br, [...cps, cp], saved);
+			}
+		}
+	}
+}
 
-export function find_runs(sorted, dx = 1) {
+export function find_runs(sorted, dx) {
 	let runs = [];
 	for (let i = 0, e = sorted.length; i < e; ) {
 		let start = i;
@@ -79,31 +96,11 @@ export function flip_byte(x) {
 	return x;
 }
 
-export function encode_seq(values) {
-	let enc = new Encoder();
-	let prev = -1;
-	for (let [x, n] of find_runs(values, 0)) {
-		enc.write_pos_int(from_signed(x - prev));
-		enc.write_pos_int(n);
-		prev = x;
-	}
-	return enc;
-}
-
-export function encode_sorted(sorted) {
-	let enc = new Encoder();
-	let prev = -1;
-	for (let [x, n] of find_runs(sorted)) {
-		enc.write_pos_int(x - prev);
-		enc.write_pos_int(n);
-		prev = x + n;
-	}
-	return enc;
-}
-
-
 export class Encoder {
 	constructor() {
+		this.reset();
+	}
+	reset() {
 		this.value = 0;
 		this.width = 0;
 		this.bytes = [];
@@ -124,18 +121,45 @@ export class Encoder {
 		while (this.width) this.write_bit(0);
 	}
 	get b64() {
-		return this.encoded.toString('base64');
+		return Buffer.from(this.encoded).toString('base64');
 	}
 	get encoded() {
 		this.flush();
-		return Buffer.from([...this.bytes].reverse().map(flip_byte)); // write backwards
+		return [...this.bytes].reverse().map(flip_byte); // write backwards
 	}
-	write_pos_int(x) {
-		if (!Number.isInteger(x) || x <= 0 || x >= 0xFFFFFFF) throw new TypeError(`bad int ${x}`);
+	get reader() {
+		return bit_reader_from_bytes(this.encoded);
+	}
+	write_uint(x) {
+		if (!Number.isInteger(x) || x < 0 || x >= MAX_UINT) throw new TypeError(`bad uint ${x}`);
 		let w = 32 - Math.clz32(x);
 		for (let i = 0; i < w; i++) this.write_bit(1);
 		this.write_bit(0);
 		while (w > 0) this.write_bit(x & (1 << --w));
+	}
+	write_uint_sorted(v) {
+		 v = unique_sorted(v);
+		 let prev = 0;
+		 for (let [x, n] of find_runs(v, 1)) {
+			 this.write_uint(x - prev);
+			 this.write_uint(n);
+			 prev = x + n + 1;
+		 }
+		 this.write_uint(0);
+		 this.write_uint(0);
+	}
+	write_emojis(m, fn) {
+		this.write_emoji_node(EmojiNode.from(m), fn);
+	}
+	write_emoji_node(node, fn) {
+		this.write_bit(node.valid);
+		this.write_bit(node.save_mod);
+		this.write_bit(node.check_mod);
+		for (let [keys, x] of Object.entries(node.branches)) {
+			this.write_uint_sorted(keys.split(',').map(k => fn(parseInt(k))));
+			this.write_emoji_node(x, fn);
+		}
+		this.write_uint_sorted([]);
 	}
 }
 

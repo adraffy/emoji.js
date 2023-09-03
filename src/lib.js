@@ -1,16 +1,21 @@
-import {RI_REGEX, EMOD_REGEX, TAG_REGEX, EMOJI_DATA, RGI_SOLO, RGI_DATA, RGI_TAG_SEQS} from './include.js';
-import {runs_from_b64, seq_from_b64, flatten_runs} from './coder.js';
+import {RI_REGEX, EMOD_REGEX, TAG_REGEX, EMOJI_DATA, RGI_TAG_SEQS} from './include.js';
+import {bit_reader_from_b64, decode_uint_sorted, decode_emojis, find_runs} from './coder.js';
 import {fcp, regex_range, remove_fe0f} from './utils.js';
 
-let emoji_runs = runs_from_b64(EMOJI_DATA);
+let next = bit_reader_from_b64(EMOJI_DATA);
+const EMOJI_CPS = decode_uint_sorted(next);
+let replace = [0x200D, 0xFE0F, ...EMOJI_CPS, 0x20E3];
 let upgrade_map = new Map();
-let replace = [0xFE0F, 0x200D].concat(flatten_runs(emoji_runs), [0x20E3]);
-export const RGI_EMOJI = flatten_runs(runs_from_b64(RGI_SOLO)).map(cp => fcp(cp));
-for (let m of RGI_DATA) {
-	m = m.map(seq_from_b64);
-	m[0].map((_, i) => add(fcp(...m.map(v => replace[v[i]]))));
-}
-RGI_TAG_SEQS.map(add); // note: not sorted
+export const RGI_EMOJI = [];
+decode_emojis(next, i => replace[i]).forEach(v => add(fcp(...v)));
+RGI_TAG_SEQS.map(add);
+RGI_EMOJI.sort((a, b) => {
+	let aa = remove_fe0f(a);
+	let bb = remove_fe0f(b);
+	let c = aa.length - bb.length;
+	if (c == 0) c = a > b;
+	return c;
+});
 function add(emoji) {
 	let strip = remove_fe0f(emoji);
 	if (emoji !== strip) upgrade_map.set(strip, emoji);
@@ -39,26 +44,30 @@ function add(emoji) {
 
 // 20230514: RI_REGEX{2} => RI_REGEX{1,2}
 // 20230514: allow arbitrary FE0F, \uFE0F\u20E3? => \u20E3
-const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|[${emoji_runs.map(([x, n]) => regex_range(x, x+n-1)).join('')}]\uFE0F*(?:(?:${EMOD_REGEX}|\u20E3|${TAG_REGEX})\uFE0F*)?)`;
+const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|[${find_runs(EMOJI_CPS, 1).map(([x, n]) => regex_range(x, x+n-1)).join('')}]\uFE0F*(?:(?:${EMOD_REGEX}|\u20E3|${TAG_REGEX})\uFE0F*)?)`;
 
-export const POSSIBLE_REGEX = new RegExp(`${ZWJ_ELEMENT}(?:\u200D${ZWJ_ELEMENT})*`, 'gmu');
+export const POSSIBLE_REGEX = new RegExp(`${ZWJ_ELEMENT}(?:\u200D${ZWJ_ELEMENT})*\uFE0E*`, 'gmu');
 
 // emoji are sorted so reversed will match longest sequence first
-export const RGI_REGEX = new RegExp([...RGI_EMOJI].reverse().map(s => s.replace('*', '\\*').replaceAll('\uFE0F', '\uFE0F?')).join('|'), 'gmu');
-
-// prevent mutation
-Object.freeze(RGI_EMOJI);
+export const RGI_REGEX = new RegExp([...RGI_EMOJI].reverse().map(s => s.replaceAll('*', '\\*').replaceAll('\uFE0F', '\uFE0F?')).join('|'), 'mu');
 
 // frozen prevents iteration
 // is this a bug? TypeError: Cannot assign to read only property 'lastIndex' of object '[object RegExp]'
 //Object.freeze(RGI_REGEX);
 //Object.freeze(POSSIBLE_REGEX);
 
-// entire string must match
-// if RGI, return upgraded
+// prevent mutation
+Object.freeze(RGI_EMOJI);
+
+// if single RGI emoji, return upgraded
 export function qualifize(emoji) {
 	let match = emoji.match(RGI_REGEX);
-	if (match && match[0] === emoji) return upgrade_map.get(remove_fe0f(emoji)) || emoji;
+	if (match && match.index === 0) {
+		let rest = emoji.slice(match[0].length);
+		if (rest.match(/^[\uFE0E\uFE0F]*$/u)) { // allow arbitrary final styling
+			return upgrade_map.get(remove_fe0f(match[0])) || emoji;
+		}
+	}
 }
 
 export function tokenize(input) {
@@ -71,7 +80,7 @@ export function tokenize(input) {
 		}
 		let emoji = match[0];
 		prev = index + emoji.length;
-		while (input.charCodeAt(prev) === 0xFE0E) prev++; // eat text-styling
+		//while (input.charCodeAt(prev) === 0xFE0E) prev++; // eat text-styling
 		let token = {
 			index,
 			emoji: input.slice(index, prev),

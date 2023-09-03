@@ -13,10 +13,16 @@ export class Spec {
 		this.data = read_data_file(join(dir, 'emoji-data.txt'));
 		this.seq = read_seq_file(join(dir, 'emoji-sequences.txt'));
 		this.zwj = read_seq_file(join(dir, 'emoji-zwj-sequences.txt'));
-		this.prop = read_prop_file(join(dir, 'PropList.txt'));
+	}
+	get props() {
+		return read_prop_file(join(this.dir, 'PropList.txt'));
 	}
 	get tests() {
 		return read_test_file(join(this.dir, 'emoji-test.txt'));
+	}
+	toJSON() {
+		let {dir, ...rest} = this;
+		return rest;
 	}
 }
 
