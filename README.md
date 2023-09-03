@@ -4,6 +4,7 @@
 
 * Unicode `15.1.0`
 * Minified File Size: [`6KB`](./dist/index.min.js)
+* ✅️ Passes **100%** [Unicode Emoji Tests](https://www.unicode.org/Public/emoji/latest/emoji-test.txt)
 
 [**Demo**](https://adraffy.github.io/emoji.js/test/demo.html) ⭐
 
@@ -15,10 +16,10 @@ import {POSSIBLE_REGEX, RGI_REGEX, RGI_EMOJI} from '@adraffy/emoji';
 // RegExp that matches UTS-51 "Possible" Emoji
 // see: https://www.unicode.org/reports/tr51/#EBNF_and_Regex
 // with some modifications:
-// * matches (1) regional indicator
-// * matches repeated inner FE0F
+// * matches 1-2 regional indicator instead of exactly 2
+// * matches repeated inner/trailing FE0F
 // * matches trailing FE0E
-// * does not match 0-9 + FE0F
+// * does NOT match isolated [#*0-9] w/o FE0F
 let match = 'abc💩\u200D💩xyz'.match(POSSIBLE_REGEX);
 // [
 //   '💩‍💩',
