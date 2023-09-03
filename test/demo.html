@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>emoji.js</title>
+<style>
+.hide {
+	display: none !important;
+}
+.balloon {
+	flex: 1;
+}
+button {
+	cursor: pointer;
+}
+body { 
+	margin: 3rem; 
+	background: #eee;
+}
+header {
+	display: flex;
+	justify-content: space-between;
+}
+h1 {
+	margin: 0;
+}
+h1 span {
+	font-size: 60%;
+	font-weight: bold;
+}
+#github {
+	text-align: right;
+}
+#links {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	margin-top: 4px;
+	gap: 2px 8px;
+}
+#links .code {
+	font-family: monospace;
+}
+textarea {
+	min-height: 3rem;
+	width: 100%;
+	box-sizing: border-box;
+	resize: vertical;
+	font-size: 16pt;
+}
+footer {
+	text-align: center;
+	color: #666;
+	margin: 16px 8px 8px;
+}
+#tokens:empty {
+	display: none;
+}
+#tokens {
+	margin: 16px 0;
+	width: 100%;
+	border-collapse: collapse;
+	background-color: #fff;
+}
+#tools {
+	display: flex;
+	gap: 4px;
+	margin: 8px 0;
+}
+#tools button {
+	padding: 4px 8px;
+}
+#tokens tr:hover {
+	background-color: #cff !important;
+	outline: 2px solid #000;
+}
+#tokens tr:nth-child(odd) {
+	background-color: rgba(0, 0, 0, .1);
+}
+#tokens td {
+	border: 1px solid #ccc;
+	text-align: center;
+	padding: 3px 6px;
+}
+#tokens td.index {
+	color: #999;
+}
+#tokens td.range {
+	font-family: monospace;
+	white-space: pre;
+}
+#tokens td.length {
+	background-color: #f8eedd;
+}
+#tokens td.value {
+	width: 100%;
+	text-align: left;
+	background-color: #ffa8;
+}
+#tokens td.value div {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+}
+#tokens td.value div span {
+	font-size: 150%;
+}
+#tokens tr:hover div button {
+	display: unset;
+}
+#tokens td.value div code {
+	background-color: #fff;
+	padding: 1px 4px;
+}
+#tokens td.value.valid {
+	background-color: #afa8;
+}
+#tokens td.value.error {
+	background-color: #faa8;
+}
+
+@media only screen and (max-width: 800px) { 
+	body {
+		margin: 1rem;
+	}
+}
+</style>
+</head>
+<body>
+<header>
+	<h1>Emoji Parser</h1>
+	<a id="github" href="https://github.com/adraffy/emoji.js">adraffy/emoji.js</a>
+</header>
+<div id="links">
+	<a href="https://www.unicode.org/reports/tr51/"><b>UTS-51</b></a>
+	<a class="code" href="../dist/data.json">data.json</a>
+</div>
+<div id="tools">
+	<button id="purge_emoji_btn">📝️ Just Text</button>
+	<button id="purge_text_btn">😀️ Just Emoji</button>
+	<button id="rgi_btn">🧹️ Only RGI</button>
+	<button id="upgrade_btn">💖️ Qualifize</button>
+	<span class="balloon"></span>
+	<button id="add_emoji_btn">🎲️ Add Emoji</button>
+</div>
+<textarea rows="10">abc💩‍💩123👨🏻‍❤️‍💋‍👨🏾</textarea>
+<table id="tokens"></table>
+<footer>Created by <a href="https://twitter.com/adraffy">raffy.eth</a></footer>
+<script type="module">
+import {tokenize, qualifize, RGI_EMOJI} from '../dist/index.min.js';
+
+const ta = document.querySelector('textarea');
+const purge_emoji_btn = document.querySelector('#purge_emoji_btn');
+const purge_text_btn = document.querySelector('#purge_text_btn');
+const rgi_btn = document.querySelector('#rgi_btn');
+const upgrade_btn = document.querySelector('#upgrade_btn');
+const add_emoji_btn = document.querySelector('#add_emoji_btn');
+const tokens_table = document.querySelector('#tokens');
+
+ta.addEventListener('input', update_tokenize);
+purge_emoji_btn.addEventListener('click', () => {
+	ta.value = tokenize(ta.value).map(x => x.text || '').join('');
+	update_tokenize();
+});
+purge_text_btn.addEventListener('click', () => {
+	ta.value = tokenize(ta.value).map(x => x.emoji || '').join('');
+	update_tokenize();
+});
+rgi_btn.addEventListener('click', () => {
+	ta.value = tokenize(ta.value).map(x => x.text || x.RGI || '').join('');
+	update_tokenize();
+});
+upgrade_btn.addEventListener('click', () => {
+	ta.value = tokenize(ta.value).map(x => x.text || x.RGI || x.emoji).join('');
+	update_tokenize();
+});
+add_emoji_btn.addEventListener('click', () => {
+	let emoji = RGI_EMOJI[RGI_EMOJI.length * Math.random()|0];
+	let pos = Math.max(ta.selectionStart, ta.selectionEnd);
+	ta.setRangeText(emoji, pos, pos, 'end');
+	update_tokenize();
+});
+update_tokenize();
+
+function update_tokenize() {
+	let tokens = tokenize(ta.value);
+	purge_text_btn.disabled = !tokens.some(t => t.text);
+	purge_emoji_btn.disabled = !tokens.some(t => t.emoji);
+	rgi_btn.disabled = !tokens.some(t => t.emoji && !t.RGI);
+	upgrade_btn.disabled = !tokens.some(t => t.RGI && t.RGI !== t.emoji);
+	tokens_table.innerHTML = '';	
+	tokens_table.append(...tokens.map(({index, emoji, RGI, text}, i) => {
+		let value = emoji || text;
+		let end = index + value.length;
+		let cp_len = [...value].length;
+		
+		let tr = document.createElement('tr');
+		tr.classList.add(emoji ? 'emoji' : 'text');
+		tr.innerHTML = `
+			<td class="index">${i+1}</td>
+			<td class="range">(${index}, ${end})</td>
+			<td class="length">${cp_len}</td>
+		`;
+		let td = document.createElement('td');
+		td.classList.add('value');
+		if (emoji) {
+			td.classList.add(RGI ? 'valid' : 'error');
+			if (RGI) value = RGI;
+			let span = document.createElement('span');
+			span.classList.add('form');
+			span.innerText = value;
+			let code = document.createElement('code');
+			code.innerHTML = Array.from(value, c => c.codePointAt(0).toString(16).toUpperCase().padStart(2, '0')).join(' ');
+			let div = document.createElement('div');
+			div.append(span, code);
+			td.append(div);
+		} else {
+			let half = 50;
+			value = value.replaceAll(/[\r\n]+/g, '⏎');
+			if (value.length > 2*half) {
+				value = value.slice(0, 50) + '...' + value.slice(-50);
+			}
+			td.innerText = value;
+		}
+		tr.append(td);
+		tr.addEventListener('pointerenter', () => {
+			ta.focus();
+			ta.setSelectionRange(index, end);
+		});
+		return tr;
+	}));
+}
+
+</script>
+</body>
+</html>

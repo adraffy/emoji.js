@@ -1,9 +1,11 @@
 # emoji.js
 
-0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji parser.
+0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji Parser.
 
 * Unicode `15.1.0`
 * Minified File Size: [`6KB`](./dist/index.min.js)
+
+[**Demo**](https://adraffy.github.io/emoji.js/test/demo.html) ⭐
 
 ```Javascript
 import {POSSIBLE_REGEX, RGI_REGEX, RGI_EMOJI} from '@adraffy/emoji';

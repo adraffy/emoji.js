@@ -1,7 +1,7 @@
 {
 	"name": "@adraffy/emoji",
-	"version": "0.0.3",
-	"description": "0-dependency UTS-51 Emoji parser",
+	"version": "0.0.4",
+	"description": "UTS-51 Emoji Parser",
 	"keywords": [
 		"UTS-51",
 		"Unicode",

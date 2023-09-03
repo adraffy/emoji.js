@@ -16,7 +16,7 @@ export default [
 		input: './src/lib.js',
 		output: [
 			{
-				file: './dist/index.js',
+				file: './dist/index.mjs',
 				format: 'es',
 			},
 			{

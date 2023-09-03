@@ -44,7 +44,8 @@ function add(emoji) {
 
 // 20230514: RI_REGEX{2} => RI_REGEX{1,2}
 // 20230514: allow arbitrary FE0F, \uFE0F\u20E3? => \u20E3
-const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|[${find_runs(EMOJI_CPS, 1).map(([x, n]) => regex_range(x, x+n-1)).join('')}]\uFE0F*(?:(?:${EMOD_REGEX}|\u20E3|${TAG_REGEX})\uFE0F*)?)`;
+// 20230902: allow digits{FE0F} but not digits
+const ZWJ_ELEMENT = `(${RI_REGEX}{1,2}|([\*\#0-9]\uFE0F|[${find_runs(EMOJI_CPS.filter(x => x > 0x39), 1).map(([x, n]) => regex_range(x, x+n-1)).join('')}])\uFE0F*(?:(?:${EMOD_REGEX}|\u20E3|${TAG_REGEX})\uFE0F*)?)`;
 
 export const POSSIBLE_REGEX = new RegExp(`${ZWJ_ELEMENT}(?:\u200D${ZWJ_ELEMENT})*\uFE0E*`, 'gmu');
 
@@ -75,7 +76,7 @@ export function tokenize(input) {
 	let prev = 0;
 	for (let match of input.matchAll(POSSIBLE_REGEX)) {
 		let {index} = match;
-		if (index) {
+		if (prev < index) {
 			tokens.push({index: prev, text: input.slice(prev, index)});
 		}
 		let emoji = match[0];
