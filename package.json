@@ -3,20 +3,20 @@
 	"version": "0.0.4",
 	"description": "UTS-51 Emoji Parser",
 	"keywords": [
+		"Emoji",
 		"UTS-51",
 		"Unicode",
-		"Emoji",
 		"RGI"
 	],
 	"type": "module",
 	"exports": {
 		".": {
 			"require": "./dist/index.cjs",
-			"import": "./dist/index.js",
+			"import": "./dist/index.mjs",
 			"types": "./dist/index.d.ts"
 		}
 	},
-	"main": "./dist/index.js",
+	"main": "./dist/index.mjs",
 	"files": [
 		"./dist"
 	],
