@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>emoji.js</title>
+<title>Emoji Parser</title>
 <style>
 .hide {
 	display: none !important;
@@ -58,7 +58,6 @@ footer {
 	display: none;
 }
 #tokens {
-	margin: 16px 0;
 	width: 100%;
 	border-collapse: collapse;
 	background-color: #fff;
@@ -120,6 +119,12 @@ footer {
 #tokens td.value.error {
 	background-color: #faa8;
 }
+#tokens_note {
+	margin: 8px;
+	text-align: center;
+	font-style: italic;
+	color: #666;
+}
 @media only screen and (max-width: 800px) { 
 	body {
 		margin: 1rem;
@@ -138,14 +143,15 @@ footer {
 	<a class="code" href="../dist/data.json">data.json</a>
 </div>
 <div id="tools">
-	<button id="purge_emoji_btn">📝️ Just Text</button>
-	<button id="purge_text_btn">😀️ Just Emoji</button>
-	<button id="rgi_btn">🧹️ Only RGI</button>
-	<button id="upgrade_btn">💖️ Qualifize</button>
+	<button id="purge_emoji_btn" title="Keep Text and Remove Emoji">📝️ Just Text</button>
+	<button id="purge_text_btn" title="Keep Emoji and Remove Text">😀️ Just Emoji</button>
+	<button id="rgi_btn">🧹️ Clean Non-RGI</button>
+	<button id="upgrade_btn" title="Upgrade Emoji to Fully-Qualified if Possible">💖️ Qualifize?</button>
 	<span class="balloon"></span>
 	<button id="add_emoji_btn">🎲️ Add Emoji</button>
 </div>
 <textarea rows="10">abc💩‍💩123👨🏻‍❤️‍💋‍👨🏾</textarea>
+<div id="tokens_note">Hover rows to highlight correpsonding emoji.</div>
 <table id="tokens"></table>
 <footer>Created by <a href="https://twitter.com/adraffy">raffy.eth</a></footer>
 <script type="module">
