@@ -1,7 +1,7 @@
 import {EmojiNode} from './emoji-node.js';
 import {unique_sorted} from './utils.js';
 
-export const MAX_UINT = 0xFFFFFFF;
+export const MAX_UINT = 0x7FFFFFFF;
 
 export function bit_reader_from_b64(encoded) {
 	return bit_reader_from_bytes(Array.from(atob(encoded), c => c.charCodeAt(0)));

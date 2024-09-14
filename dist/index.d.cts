@@ -7,8 +7,9 @@ export function qualifize(emoji: string): string?;
 
 interface Token {
 	index: number;
-	text?: string:
+	text?: string;
 	emoji?: string;
 	RGI?: string;
 }
+
 export function tokenize(input: string): Token[];

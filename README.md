@@ -2,15 +2,16 @@
 
 0-dependency [UTS-51](https://www.unicode.org/reports/tr51/) Emoji Parser.
 
-* Unicode `15.1.0`
+`npm i @adraffy/emoji` [&check;](https://www.npmjs.com/package/@adraffy/emoji)
+
+* Unicode `16.0.0`
 * Minified File Size: [`6KB`](./dist/index.min.js)
-* ✅️ Passes **100%** [Unicode Emoji Tests](https://www.unicode.org/Public/emoji/latest/emoji-test.txt)
+* ✅️ Passes **100%** [Unicode Emoji Tests](https://www.unicode.org/Public/emoji/16.0/emoji-test.txt)
 
 [**Demo**](https://adraffy.github.io/emoji.js/test/demo.html) ⭐
 
-```Javascript
+```js
 import {POSSIBLE_REGEX, RGI_REGEX, RGI_EMOJI} from '@adraffy/emoji';
-// npm i @adraffy/emoji
 // browser: https://cdn.jsdelivr.net/npm/@adraffy/emoji@latest/dist/index.min.js
 
 // RegExp that matches UTS-51 "Possible" Emoji
@@ -45,7 +46,7 @@ console.log(RGI_EMOJI);
 ```
 
 Split a string into tokens:
-```Javascript
+```js
 // string -> Token[]
 let tokens = tokenize('abc💩\uFE0Eabc💩\u200D💩abc');
 // [
@@ -81,6 +82,6 @@ qualifize('x');                  // undefined
 * `node download <version>` — download [Unicode files](./src/15.0.0/)
 	* Edit version in [`spec.js`](./src/spec.js)
 * `npm run make`
-	* Creates [`include.js`](./src/include.js)
+	* Creates [`include.js`](./src/include.js) and [`data.json`](./dist/data.json)
 * `npm run test`
 * `npm run build` — create `/dist/`

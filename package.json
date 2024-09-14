@@ -1,6 +1,6 @@
 {
 	"name": "@adraffy/emoji",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "UTS-51 Emoji Parser",
 	"keywords": [
 		"Emoji",
@@ -10,15 +10,12 @@
 	],
 	"type": "module",
 	"exports": {
-		".": {
-			"require": "./dist/index.cjs",
-			"import": "./dist/index.mjs",
-			"types": "./dist/index.d.ts"
-		}
+		"import": "./dist/index.mjs",
+		"require": "./dist/index.cjs"
 	},
-	"main": "./dist/index.mjs",
 	"files": [
-		"./dist"
+		"./dist/**/*ts",
+		"./dist/**/*js"
 	],
 	"repository": {
 		"type": "git",
@@ -31,17 +28,16 @@
 	"homepage": "https://github.com/adraffy/emoji.js#readme",
 	"author": {
 		"name": "raffy.eth",
-		"email": "raffy@me.com",
 		"url": "http://raffy.antistupid.com"
 	},
 	"scripts": {
 		"make": "node src/make.js",
 		"test": "node test/coder.js && node test/regex.js && node test/qualified.js",
-		"build": "rollup -c"
+		"build": "cp dist/index.d.mts dist/index.d.cts && rollup -c"
 	},
 	"devDependencies": {
-		"@rollup/plugin-node-resolve": "^15.0.2",
-		"@rollup/plugin-terser": "^0.4.1",
-		"rollup": "^3.21.7"
+		"@rollup/plugin-node-resolve": "^15.2.3",
+		"@rollup/plugin-terser": "^0.4.4",
+		"rollup": "^4.21.3"
 	}
 }
