@@ -4,8 +4,8 @@
 
 `npm i @adraffy/emoji` [&check;](https://www.npmjs.com/package/@adraffy/emoji)
 
-* Unicode `16.0.0`
-* Minified File Size: [`6KB`](./dist/index.min.js)
+* Unicode `17.0.0`
+* Minified File Size: [`5KB`](./dist/index.min.js)
 * ✅️ Passes **100%** [Unicode Emoji Tests](https://www.unicode.org/Public/emoji/16.0/emoji-test.txt)
 
 [**Demo**](https://adraffy.github.io/emoji.js/test/demo.html) ⭐
@@ -79,7 +79,7 @@ qualifize('x');                  // undefined
 ## Build
 
 * `git clone` this repo, then `npm install` 
-* `node download <version>` — download [Unicode files](./src/15.0.0/)
+* `npm run download <version>` — download [Unicode files](./src/15.0.0/)
 	* Edit version in [`spec.js`](./src/spec.js)
 * `npm run make`
 	* Creates [`include.js`](./src/include.js) and [`data.json`](./dist/data.json)

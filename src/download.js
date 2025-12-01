@@ -22,13 +22,17 @@ let mm = `${major}.${minor}`;
 let urls = [
 	`https://unicode.org/Public/${mmp}/ucd/emoji/emoji-data.txt`,
 	`https://www.unicode.org/Public/${mmp}/ucd/PropList.txt`,
-	`https://unicode.org/Public/emoji/${mm}/emoji-zwj-sequences.txt`,
-	`https://unicode.org/Public/emoji/${mm}/emoji-sequences.txt`,
-	`https://unicode.org/Public/emoji/${mm}/emoji-test.txt`,
+	`https://unicode.org/Public/${mmp}/emoji/emoji-zwj-sequences.txt`,
+	`https://unicode.org/Public/${mmp}/emoji/emoji-sequences.txt`,
+	`https://unicode.org/Public/${mmp}/emoji/emoji-test.txt`,
 ];
 
 for (let url of urls) {
-	let res = await fetch(url);
+	let res = await fetch(url, {
+		headers: {
+			'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:145.0) Gecko/20100101 Firefox/145.0'
+		}
+	});
 	if (!res.ok) throw new Error(`${res.status} ${url}`);
 	let buf = Buffer.from(await res.arrayBuffer());
 	writeFileSync(join(out_dir, basename(url)), buf);

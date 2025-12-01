@@ -1,6 +1,6 @@
 {
 	"name": "@adraffy/emoji",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "UTS-51 Emoji Parser",
 	"keywords": [
 		"Emoji",
@@ -33,7 +33,8 @@
 	"scripts": {
 		"make": "node src/make.js",
 		"test": "node test/coder.js && node test/regex.js && node test/qualified.js",
-		"build": "cp dist/index.d.mts dist/index.d.cts && rollup -c"
+		"build": "cp dist/index.d.mts dist/index.d.cts && rollup -c",
+		"download": "node src/download.js"
 	},
 	"devDependencies": {
 		"@rollup/plugin-node-resolve": "^15.2.3",

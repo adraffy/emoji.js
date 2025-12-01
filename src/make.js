@@ -9,7 +9,6 @@ console.log(Object.keys(SPEC.seq));
 console.log(Object.keys(SPEC.zwj));
 */
 
-
 const RI = SPEC.props.Regional_Indicator;
 const EMOD = SPEC.data.Emoji_Modifier;
 const TAG_START = 0xE0020;
